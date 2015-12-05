@@ -1,5 +1,7 @@
 from pkg_resources import resource_string
-
+import sys, os
+import game
 
 def main():
-    print resource_string(__name__, 'res/test/test.txt')
+    g = game.game()
+    g.run()
