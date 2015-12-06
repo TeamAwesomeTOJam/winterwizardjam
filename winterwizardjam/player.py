@@ -1,4 +1,4 @@
-from math import sin, cos, tanh, sqrt
+from math import sin, cos, tanh, sqrt, fabs, pi
 
 class player(object):
 
@@ -47,6 +47,14 @@ class player(object):
             if self.y <= new_height:
                 self.y = new_height
                 self.grounded = True
+
+                #we have landed. kill some speed
+                new_angle = tanh(self.geometry.slope(self.x))
+                landing_angle = fabs(new_angle - self.angle)
+                self.speed *= cos(landing_angle)
+                print landing_angle * 180 / pi
+
+
             else:
                 self.grounded = False
 
