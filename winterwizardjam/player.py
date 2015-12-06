@@ -7,30 +7,14 @@ class player(object):
         self.x = 0
         self.y = 0
         self.grounded = True
-        self.vel_x = 10
-        self.vel_y = 0
+
         self.gravity = -10
 
         self.speed = 100
         self.angle = 0
 
     def update(self, dt):
-        #
-        # self.vel_y += self.gravity * dt
-        #
-        # self.x += self.vel_x * dt
-        # self.y += self.vel_y * dt
-        #
-        # h = self.geometry.height(self.x)
-        # if self.y <= h:
-        #     self.y = h
-        #
-        # a = tanh(self.vel_y/self.vel_x)
-
-
-        height = self.geometry.height(self.x)
         slope = self.geometry.slope(self.x)
-        print self.speed
 
         if self.grounded:
             #we started on the ground
