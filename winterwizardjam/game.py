@@ -3,6 +3,8 @@ import sys
 import sdl2hl
 
 import geometry
+import player
+import clock
 
 
 class game(object):
@@ -18,18 +20,17 @@ class game(object):
         #self.renderer = sdl2hl.Renderer(self.window,-1, sdl2hl.RendererFlags.presentvsync)
         self.renderer = sdl2hl.Renderer(self.window)
 
+        self.player = player.player(self.geometry)
+        self.clock = clock.clock()
+
     def run(self):
-        start_time = sdl2hl.timer.get_ticks()
-        frames = 0
 
         tangent_x = 0
 
         while True:
-            frames += 1
+            dt = self.clock.tick(60)
             for event in sdl2hl.events.poll():
                 if event.type == sdl2hl.QUIT:
-                    end_time = sdl2hl.timer.get_ticks()
-                    print 1000.0*frames / (end_time - start_time)
                     sdl2hl.quit()
                     sys.exit()
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.left:
@@ -37,6 +38,9 @@ class game(object):
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.right:
                     tangent_x += 1
 
+
+            #handle the player
+            self.player.update(dt)
 
 
             self.renderer.draw_color = (0,0,0,255)
@@ -56,14 +60,9 @@ class game(object):
             self.renderer.draw_rects(*rects)
             # self.renderer.draw_lines(*points)
 
-            ##draw the slope
+            ##draw the player
             self.renderer.draw_color = (255, 0, 0, 255)
-            x = tangent_x
-            y = self.window_size[1] - int(self.geometry.height(x))
-
-            p1 = (int(x) - 100, int(y + 100 * self.geometry.slope(x)))
-            p2 = (int(x + 100), int(y - 100 * self.geometry.slope(x)))
-
-            self.renderer.draw_line(p1[0], p1[1], p2[0], p2[1])
+            r = sdl2hl.Rect(int(self.player.x) - 5, self.window_size[1] - int(self.player.y) - 5, 10, 10)
+            self.renderer.draw_rect(r)
 
             self.renderer.present()
