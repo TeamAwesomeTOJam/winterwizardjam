@@ -2,6 +2,8 @@ import sys
 
 import sdl2hl
 
+from math import sin, cos, pi, atan2
+
 import geometry
 import player
 import clock
@@ -23,10 +25,10 @@ class game(object):
         self.player = player.player(self.geometry)
         self.clock = clock.clock()
 
+        self.mouse_x = 0
+        self.mouse_y = 0
+
     def run(self):
-
-        tangent_x = 0
-
         while True:
             dt = self.clock.tick(60)
             for event in sdl2hl.events.poll():
@@ -34,12 +36,20 @@ class game(object):
                     sdl2hl.quit()
                     sys.exit()
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.left:
-                    tangent_x -= 1
+                    pass
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.right:
-                    tangent_x += 1
-
+                    pass
+                elif event.type == sdl2hl.MOUSEMOTION:
+                    self.mouse_x = event.x
+                    self.mouse_y = self.window_size[1] - event.y
 
             #handle the player
+
+            rise = self.mouse_y - self.player.y
+            run = self.mouse_x - self.player.x
+
+            self.player.kite_angle = atan2(rise, run)
+
             self.player.update(dt)
 
 
@@ -64,5 +74,17 @@ class game(object):
             self.renderer.draw_color = (255, 0, 0, 255)
             r = sdl2hl.Rect(int(self.player.x) - 5, self.window_size[1] - int(self.player.y) - 5, 10, 10)
             self.renderer.draw_rect(r)
+
+            ##draw the mouse
+            self.renderer.draw_color = (0, 255, 0, 255)
+            r = sdl2hl.Rect(int(self.mouse_x) - 5, self.window_size[1] - int(self.mouse_y) - 5, 10, 10)
+            self.renderer.draw_rect(r)
+
+            # draw the kite
+            self.renderer.draw_color = (0, 0, 255, 255)
+            k_x = int(self.player.x + cos(self.player.kite_angle) * 200)
+            k_y = int(self.player.y + sin(self.player.kite_angle) * 200)
+
+            self.renderer.draw_line(int(self.player.x), self.window_size[1] - int(self.player.y), k_x, self.window_size[1] - k_y)
 
             self.renderer.present()
