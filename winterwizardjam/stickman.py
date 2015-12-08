@@ -8,22 +8,22 @@ import sdl2hl.gfx
 
 class StickMan(object):
 
-    def __init__(self):
-        self.x = 128
-        self.y = 128
-        self.angle = 1
+    def __init__(self, x, y, angle):
+        self.x = x
+        self.y = y
+        self.angle = angle
     
         self.color = (255, 255, 255, 255)
         self.width = 2
         
-        self.upper_arm_length = 18
-        self.lower_arm_length = 18
-        self.upper_leg_length = 24
-        self.lower_leg_length = 24
-        self.head_radius = 16
-        self.torso_length = 32
-        self.foot_offset = 12
-        self.hip_height = 32
+        self.upper_arm_length = 9
+        self.lower_arm_length = 9
+        self.upper_leg_length = 12
+        self.lower_leg_length = 12
+        self.head_radius = 8
+        self.torso_length = 16
+        self.foot_offset = 6
+        self.hip_height = 16
         
         self.torso_angle = -math.pi / 2.0
         self.l_shoulder_angle = 1
@@ -41,19 +41,24 @@ class StickMan(object):
         return (x, y)
     
     def _get_leg_posture(self, side):
-        if side == 'r':
+        if side == 'r': # no idea what I'm doing here
             angle = self.angle + math.pi/2.0
         elif side == 'l':
             angle = self.angle - math.pi/2.0
-    
+        
+        # use law of cosines to get hip-foot distance
         hip_foot_distance = (self.hip_height**2 + self.foot_offset**2 
                 - 2 * self.hip_height * self.foot_offset * math.cos(angle))**0.5
+                
+        # use law of cosines to find hip angle
         hip_angle = math.acos((self.upper_leg_length**2 + hip_foot_distance**2 - self.lower_leg_length**2)
                                / (2 * self.upper_leg_length * hip_foot_distance))
+                               
+        # use law of cosines to find hip angle
         knee_angle = math.acos((self.lower_leg_length**2 + self.upper_leg_length**2 - hip_foot_distance**2)
                                / (2 * self.lower_leg_length * self.upper_leg_length))
         if side == 'l':
-            hip_angle = hip_angle
+            hip_angle = math.pi - hip_angle # this is totally wrong
         return (hip_angle, knee_angle)
     
     def draw(self, renderer):
@@ -87,18 +92,4 @@ class StickMan(object):
             renderer.draw_line(start[0], start[1], end[0], end[1])
         primitives = sdl2hl.gfx.GfxPrimitives(renderer)
         primitives.draw_circle(head_pos[0], head_pos[1], self.head_radius, self.color)
-        
-if __name__ == '__main__':
-    sdl2hl.init()
-    w = sdl2hl.Window()
-    r = sdl2hl.Renderer(w)
-    s = StickMan()
-
-    while True:
-        r.draw_color = (0,0,0,255)
-        r.clear()
-        s.draw(r)
-        r.present()
-
-
 

@@ -7,6 +7,7 @@ from math import sin, cos, pi, atan2
 import geometry
 import player
 import clock
+import stickman
 
 
 class game(object):
@@ -71,9 +72,8 @@ class game(object):
             # self.renderer.draw_lines(*points)
 
             ##draw the player
-            self.renderer.draw_color = (255, 0, 0, 255)
-            r = sdl2hl.Rect(int(self.player.x) - 5, self.window_size[1] - int(self.player.y) - 5, 10, 10)
-            self.renderer.draw_rect(r)
+            s = stickman.StickMan(int(self.player.x) - 5, self.window_size[1] - int(self.player.y) - 5, self.player.angle)
+            s.draw(self.renderer)
 
             ##draw the mouse
             self.renderer.draw_color = (0, 255, 0, 255)
