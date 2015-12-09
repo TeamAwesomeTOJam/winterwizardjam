@@ -8,9 +8,9 @@ class player(object):
         self.y = 0
         self.grounded = True
 
-        self.gravity = -10
+        self.gravity = -20
 
-        self.speed = 150
+        self.speed = 10
         self.angle = 0
         self.kite_angle = 0
         self.kite_force = 20
