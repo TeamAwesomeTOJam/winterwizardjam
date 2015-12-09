@@ -13,7 +13,7 @@ class geometry(object):
         return self.line_slope * x + self.amplitude_1 * cos ((2 * pi / self.period_1) * x) + self.amplitude_2 * cos ((2 * pi / self.period_2) * x)
 
     def slope(self, x):
-        return self.line_slope + self.amplitude_1 * (2 * pi / self.period_1) * sin ((2 * pi / self.period_1) * x) + self.amplitude_2 * (2 * pi / self.period_2) * sin ((2 * pi / self.period_2) * x)
+        return self.line_slope - self.amplitude_1 * (2 * pi / self.period_1) * sin ((2 * pi / self.period_1) * x) - self.amplitude_2 * (2 * pi / self.period_2) * sin ((2 * pi / self.period_2) * x)
 
     def line_height(self, x):
         return self.line_slope * x

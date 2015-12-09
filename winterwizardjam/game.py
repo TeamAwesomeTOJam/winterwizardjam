@@ -80,6 +80,18 @@ class game(object):
                                   self.player.angle)
             s.draw(self.renderer)
 
+            # draw the board
+            l = 20
+
+            p1x = self.player.x + cos(self.player.angle) * l
+            p1y = self.player.y + sin(self.player.angle) * l
+
+            p2x = self.player.x - cos(self.player.angle) * l
+            p2y = self.player.y - sin(self.player.angle) * l
+
+            self.renderer.draw_color = (255, 0, 0, 255)
+            self.renderer.draw_line(self.camera.to_screen_x(p1x), self.camera.to_screen_y(p1y), self.camera.to_screen_x(p2x), self.camera.to_screen_y(p2y))
+
             # draw the mouse
             self.renderer.draw_color = (0, 255, 0, 255)
             r = sdl2hl.Rect(self.camera.to_screen_x(self.mouse_x) - 5, self.camera.to_screen_y(self.mouse_y) - 5, 10, 10)
