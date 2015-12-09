@@ -25,6 +25,9 @@ class game(object):
         self.player = player.player(self.geometry)
         self.clock = clock.clock()
 
+        self.mouse_screen_x = 0
+        self.mouse_screen_y = 0
+
         self.mouse_x = 0
         self.mouse_y = 0
 
@@ -53,7 +56,10 @@ class game(object):
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.kp_plus:
                     self.camera.zoom *= .95
                 elif event.type == sdl2hl.MOUSEMOTION:
-                    self.mouse_x, self.mouse_y = self.camera.to_world(event.x, event.y)
+                    self.mouse_screen_x = event.x
+                    self.mouse_screen_y = event.y
+
+            self.mouse_x, self.mouse_y = self.camera.to_world(self.mouse_screen_x, self.mouse_screen_y)
 
             # handle the player
 
