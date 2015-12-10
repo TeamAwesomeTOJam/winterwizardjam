@@ -6,6 +6,7 @@ import player
 import clock
 import stickman
 import camera
+import kite
 
 
 class game(object):
@@ -30,6 +31,8 @@ class game(object):
 
         self.mouse_x = 0
         self.mouse_y = 0
+
+        self.kite = kite.kite()
 
     def run(self):
         while True:
@@ -104,11 +107,6 @@ class game(object):
             self.renderer.draw_rect(r)
 
             # draw the kite
-            self.renderer.draw_color = (0, 0, 255, 255)
-            k_x = self.player.x + cos(self.player.kite_angle) * 200
-            k_y = self.player.y + sin(self.player.kite_angle) * 200
-
-            self.renderer.draw_line(self.camera.to_screen_x(self.player.x), self.camera.to_screen_y(self.player.y), self.camera.to_screen_x(k_x),
-                                    self.camera.to_screen_y(k_y))
+            self.kite.draw(self.renderer, self.camera, self.player.x, self.player.y, self.player.kite_angle)
 
             self.renderer.present()
