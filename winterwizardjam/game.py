@@ -78,12 +78,12 @@ class game(object):
             self.renderer.clear()
             self.renderer.draw_color = (255, 255, 255, 255)
 
-            # points = []
-            # for x in range(0, self.camera.width):
-            #     y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
-            #     points.append(sdl2hl.Point(x,y))
-            #     points.append(sdl2hl.Point(x,self.window_size[1]))
-            # self.renderer.draw_lines(*points)
+            points = []
+            for x in range(0, self.camera.width):
+                y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
+                points.append(sdl2hl.Point(x,y))
+                points.append(sdl2hl.Point(x,self.window_size[1]))
+            self.renderer.draw_lines(*points)
 
             # draw the player
             # s = stickman.StickMan(self.camera.to_screen_x(self.player.x), self.camera.to_screen_y(self.player.y),
