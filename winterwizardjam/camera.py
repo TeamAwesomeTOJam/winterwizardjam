@@ -31,6 +31,9 @@ class camera(object):
 
         return screen_x, screen_y
 
+    def to_screen_p(self,p):
+        return self.to_screen(p[0], p[1])
+
     def to_screen_len(self, l):
         return int(l / self.zoom)
 

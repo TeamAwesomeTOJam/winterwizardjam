@@ -5,14 +5,18 @@ import pickle
 import sdl2hl
 import sdl2hl.gfx
 
+def distance(p1, p2):
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    return math.sqrt(dx * dx + dy * dy)
 
 class StickMan(object):
 
-    def __init__(self, x, y, angle):
-        self.x = x
-        self.y = y
-        self.angle = angle
-    
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.angle = 0
+
         self.color = (255, 255, 255, 255)
         self.width = 2
         
@@ -22,10 +26,10 @@ class StickMan(object):
         self.lower_leg_length = 12
         self.head_radius = 8
         self.torso_length = 16
-        self.foot_offset = 6
-        self.hip_height = 16
+        self.foot_offset = 5
+        self.hip_height = 18
         
-        self.torso_angle = -math.pi / 2.0
+        self.torso_angle = math.pi / 2.0
         self.l_shoulder_angle = 1
         self.r_shoulder_angle = 2
         self.l_elbow_angle = 1
@@ -36,8 +40,8 @@ class StickMan(object):
         self.r_knee_angle = 2
         
     def _get_endpoint(self, start, angle, length):
-        x = int(start[0] + length * math.cos(angle))
-        y = int(start[1] + length * math.sin(angle))
+        x = start[0] + length * math.cos(angle)
+        y = start[1] + length * math.sin(angle)
         return (x, y)
     
     def _get_leg_posture(self, side):
@@ -60,23 +64,44 @@ class StickMan(object):
         if side == 'l':
             hip_angle = math.pi - hip_angle # this is totally wrong
         return (hip_angle, knee_angle)
-    
-    def draw(self, renderer):
+
+    def update(self,  x, y, angle):
+        self.x = x
+        self.y = y
+        self.angle = angle
+
+    def draw(self, renderer, camera):
         self.l_hip_angle, self.l_knee_angle = self._get_leg_posture('l')
         self.r_hip_angle, self.r_knee_angle = self._get_leg_posture('r')
     
-        hip_pos = (self.x, self.y - self.hip_height)
+        hip_pos = (self.x, self.y + self.hip_height)
         shoulder_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length * 0.9)
         neck_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length)
         head_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length + self.head_radius)
+
+        # TODO arms
         l_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.l_shoulder_angle, self.upper_arm_length) 
         r_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.r_shoulder_angle, self.upper_arm_length)
         l_hand_pos = self._get_endpoint(l_elbow_pos, self.torso_angle + self.l_shoulder_angle + self.l_elbow_angle, self.lower_arm_length)
         r_hand_pos = self._get_endpoint(r_elbow_pos, self.torso_angle + self.r_shoulder_angle + self.r_elbow_angle, self.lower_arm_length)
-        l_knee_pos = self._get_endpoint(hip_pos, self.l_hip_angle, self.upper_leg_length)
-        r_knee_pos = self._get_endpoint(hip_pos, self.r_hip_angle, self.upper_leg_length)
-        l_foot_pos = self._get_endpoint(l_knee_pos, self.l_hip_angle + self.l_knee_angle, self.lower_leg_length)
-        r_foot_pos = self._get_endpoint(r_knee_pos, self.r_hip_angle + self.r_knee_angle, self.lower_leg_length)
+
+        l_foot_pos = self._get_endpoint((self.x, self.y), self.angle, -1 * self.foot_offset)
+        r_foot_pos = self._get_endpoint((self.x, self.y), self.angle, self.foot_offset)
+
+        l_foot_hip_distance = distance(l_foot_pos, hip_pos)
+        r_foot_hip_distance = distance(r_foot_pos, hip_pos)
+
+        l_foot_hip_angle = math.atan2(hip_pos[1] - l_foot_pos[1], hip_pos[0] - l_foot_pos[0])
+        r_foot_hip_angle = math.atan2(hip_pos[1] - r_foot_pos[1], hip_pos[0] - r_foot_pos[0])
+
+        l_foot_pos_knee_angle = math.acos((self.lower_leg_length**2 + l_foot_hip_distance**2 - self.upper_leg_length**2) / (2 * self.lower_leg_length * l_foot_hip_distance))
+        r_foot_pos_knee_angle = math.acos((self.lower_leg_length**2 + r_foot_hip_distance**2 - self.upper_leg_length**2) / (2 * self.lower_leg_length * r_foot_hip_distance))
+
+        l_knee_pos = self._get_endpoint(l_foot_pos, l_foot_hip_angle - l_foot_pos_knee_angle, self.lower_leg_length)
+        r_knee_pos = self._get_endpoint(r_foot_pos, r_foot_hip_angle - r_foot_pos_knee_angle, self.lower_leg_length)
+
+        # l_foot_pos = self._get_endpoint(l_knee_pos, self.l_hip_angle + self.l_knee_angle, self.lower_leg_length)
+        # r_foot_pos = self._get_endpoint(r_knee_pos, self.r_hip_angle + self.r_knee_angle, self.lower_leg_length)
 
         lines = [(hip_pos, neck_pos),
                  (shoulder_pos, l_elbow_pos),
@@ -87,9 +112,12 @@ class StickMan(object):
                  (hip_pos, r_knee_pos),
                  (l_knee_pos, l_foot_pos),
                  (r_knee_pos, r_foot_pos)]
+
+        screen_lines = map(lambda x : (camera.to_screen_p(x[0]), camera.to_screen_p(x[1])), lines)
+
         renderer.draw_color = self.color
-        for i, (start, end) in enumerate(lines):
+        for i, (start, end) in enumerate(screen_lines):
             renderer.draw_line(start[0], start[1], end[0], end[1])
         primitives = sdl2hl.gfx.GfxPrimitives(renderer)
-        primitives.draw_circle(head_pos[0], head_pos[1], self.head_radius, self.color)
+        primitives.draw_circle(camera.to_screen_x(head_pos[0]), camera.to_screen_y(head_pos[1]), camera.to_screen_len(self.head_radius), self.color)
 

@@ -33,6 +33,7 @@ class game(object):
         self.mouse_y = 0
 
         self.kite = kite.kite()
+        self.stickman = stickman.StickMan()
 
     def run(self):
         while True:
@@ -77,17 +78,19 @@ class game(object):
             self.renderer.clear()
             self.renderer.draw_color = (255, 255, 255, 255)
 
-            points = []
-            for x in range(0, self.camera.width):
-                y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
-                points.append(sdl2hl.Point(x,y))
-                points.append(sdl2hl.Point(x,self.window_size[1]))
-            self.renderer.draw_lines(*points)
+            # points = []
+            # for x in range(0, self.camera.width):
+            #     y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
+            #     points.append(sdl2hl.Point(x,y))
+            #     points.append(sdl2hl.Point(x,self.window_size[1]))
+            # self.renderer.draw_lines(*points)
 
             # draw the player
-            s = stickman.StickMan(self.camera.to_screen_x(self.player.x), self.camera.to_screen_y(self.player.y),
-                                  self.player.angle)
-            s.draw(self.renderer)
+            # s = stickman.StickMan(self.camera.to_screen_x(self.player.x), self.camera.to_screen_y(self.player.y),
+            #                       self.player.angle)
+            self.stickman.update(self.player.x, self.player.y, self.player.angle)
+            self.stickman.draw(self.renderer, self.camera)
+            # s.draw(self.renderer)
 
             # draw the board
             l = 20
