@@ -30,3 +30,9 @@ class camera(object):
         screen_y = self.to_screen_y(y)
 
         return screen_x, screen_y
+
+    def to_screen_len(self, l):
+        return int(l / self.zoom)
+
+    def to_world_len(self, l):
+        return  self.zoom * l

@@ -39,7 +39,7 @@ class kite(object):
         py = y + offset_length * sin(angle)
 
         primitives = sdl2hl.gfx.GfxPrimitives(renderer)
-        primitives.draw_circle(camera.to_screen_x(px), camera.to_screen_y(py), r, self.color)
+        primitives.draw_circle(camera.to_screen_x(px), camera.to_screen_y(py), camera.to_screen_len(r), self.color)
 
         # draw the outer arc
         r = (self.out_length * self.out_length + self.spread * self.spread / 4) / (2 * self.out_length)
@@ -49,4 +49,4 @@ class kite(object):
         py = y + offset_length * sin(angle)
 
         primitives = sdl2hl.gfx.GfxPrimitives(renderer)
-        primitives.draw_circle(camera.to_screen_x(px), camera.to_screen_y(py), r, self.color)
+        primitives.draw_circle(camera.to_screen_x(px), camera.to_screen_y(py), camera.to_screen_len(r), self.color)
