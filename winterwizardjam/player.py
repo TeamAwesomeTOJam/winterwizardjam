@@ -15,7 +15,7 @@ class player(object):
         self.angle = 0
         self.kite_angle = 0
         self.kite_force = 20
-        self.drag_coificient = 0.001
+        self.drag_coificient = 0.0001
 
         self.stickman = stickman.StickMan()
         self.kite = kite.kite()

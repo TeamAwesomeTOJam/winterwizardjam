@@ -32,15 +32,12 @@ class game(object):
         self.mouse_x = 0
         self.mouse_y = 0
 
-        self.kite = kite.kite()
-        self.stickman = stickman.StickMan()
-
     def run(self):
         while True:
             dt = self.clock.tick(60)
 
             # move the camera
-            self.camera.x = self.player.x - 300
+            self.camera.x = self.player.x - 100
             self.camera.y = self.geometry.line_height(self.camera.x) - 300
 
             for event in sdl2hl.events.poll():
@@ -68,6 +65,7 @@ class game(object):
             # handle the player
             self.player.update(dt, self.mouse_x, self.mouse_y)
 
+            # draw the slope
             self.renderer.draw_color = (0, 0, 0, 255)
             self.renderer.clear()
             self.renderer.draw_color = (255, 255, 255, 255)
