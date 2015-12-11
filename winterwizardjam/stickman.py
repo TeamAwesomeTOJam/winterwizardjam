@@ -16,6 +16,7 @@ class StickMan(object):
         self.x = 0
         self.y = 0
         self.angle = 0
+        self.kite_angle = 0
 
         self.color = (255, 255, 255, 255)
         self.width = 2
@@ -28,6 +29,7 @@ class StickMan(object):
         self.torso_length = 16
         self.foot_offset = 5
         self.hip_height = 18
+        self.hand_spread = 8
         
         self.torso_angle = math.pi / 2.0
         self.l_shoulder_angle = 1
@@ -38,6 +40,11 @@ class StickMan(object):
         self.r_hip_angle = 2
         self.l_knee_angle = 1
         self.r_knee_angle = 2
+
+        self.reach = 15
+
+        self.shoulder_pos = (0, 0)
+        self.reach_pos = (0, 0)
         
     def _get_endpoint(self, start, angle, length):
         x = start[0] + length * math.cos(angle)
@@ -65,10 +72,14 @@ class StickMan(object):
             hip_angle = math.pi - hip_angle # this is totally wrong
         return (hip_angle, knee_angle)
 
-    def update(self,  x, y, angle):
+    def update(self, x, y, angle, kite_angle):
         self.x = x
         self.y = y
         self.angle = angle
+        self.kite_angle = kite_angle
+        hip_pos = (self.x, self.y + self.hip_height)
+        self.shoulder_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length * 0.9)
+        self.reach_pos = self._get_endpoint(self.shoulder_pos, self.kite_angle, self.reach)
 
     def draw(self, renderer, camera):
         self.l_hip_angle, self.l_knee_angle = self._get_leg_posture('l')
@@ -80,10 +91,29 @@ class StickMan(object):
         head_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length + self.head_radius)
 
         # TODO arms
-        l_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.l_shoulder_angle, self.upper_arm_length) 
-        r_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.r_shoulder_angle, self.upper_arm_length)
-        l_hand_pos = self._get_endpoint(l_elbow_pos, self.torso_angle + self.l_shoulder_angle + self.l_elbow_angle, self.lower_arm_length)
-        r_hand_pos = self._get_endpoint(r_elbow_pos, self.torso_angle + self.r_shoulder_angle + self.r_elbow_angle, self.lower_arm_length)
+
+        reach_pos = self._get_endpoint(shoulder_pos, self.kite_angle, self.reach)
+        bar_angle = self.kite_angle - math.pi / 2
+
+        l_hand_pos = self._get_endpoint(reach_pos, bar_angle, self.hand_spread / 2.0)
+        r_hand_pos = self._get_endpoint(reach_pos, bar_angle, self.hand_spread / -2.0)
+
+        l_hand_shoulder_distance = distance(l_hand_pos, shoulder_pos)
+        r_hand_shoulder_distance = distance(r_hand_pos, shoulder_pos)
+
+        l_hand_shoulder_angle = math.atan2(shoulder_pos[1] - l_hand_pos[1], shoulder_pos[0] - l_hand_pos[0])
+        r_hand_shoulder_angle = math.atan2(shoulder_pos[1] - r_hand_pos[1], shoulder_pos[0] - r_hand_pos[0])
+
+        l_hand_pos_elbow_angle = math.acos((self.lower_arm_length**2 + l_hand_shoulder_distance**2 - self.upper_arm_length**2) / (2 * self.lower_arm_length * l_hand_shoulder_distance))
+        r_hand_pos_elbow_angle = math.acos((self.lower_arm_length**2 + r_hand_shoulder_distance**2 - self.upper_arm_length**2) / (2 * self.lower_arm_length * r_hand_shoulder_distance))
+
+        l_elbow_pos = self._get_endpoint(l_hand_pos, (l_hand_shoulder_angle + l_hand_pos_elbow_angle), self.lower_arm_length)
+        r_elbow_pos = self._get_endpoint(r_hand_pos, (r_hand_shoulder_angle + r_hand_pos_elbow_angle), self.lower_arm_length)
+
+        # l_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.l_shoulder_angle, self.upper_arm_length)
+        # r_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.r_shoulder_angle, self.upper_arm_length)
+        # l_hand_pos = self._get_endpoint(l_elbow_pos, self.torso_angle + self.l_shoulder_angle + self.l_elbow_angle, self.lower_arm_length)
+        # r_hand_pos = self._get_endpoint(r_elbow_pos, self.torso_angle + self.r_shoulder_angle + self.r_elbow_angle, self.lower_arm_length)
 
         l_foot_pos = self._get_endpoint((self.x, self.y), self.angle, -1 * self.foot_offset)
         r_foot_pos = self._get_endpoint((self.x, self.y), self.angle, self.foot_offset)

@@ -66,13 +66,7 @@ class game(object):
             self.mouse_x, self.mouse_y = self.camera.to_world(self.mouse_screen_x, self.mouse_screen_y)
 
             # handle the player
-
-            rise = self.mouse_y - self.player.y
-            run = self.mouse_x - self.player.x
-
-            self.player.kite_angle = atan2(rise, run)
-
-            self.player.update(dt)
+            self.player.update(dt, self.mouse_x, self.mouse_y)
 
             self.renderer.draw_color = (0, 0, 0, 255)
             self.renderer.clear()
@@ -86,25 +80,6 @@ class game(object):
             self.renderer.draw_lines(*points)
 
             # draw the player
-            # s = stickman.StickMan(self.camera.to_screen_x(self.player.x), self.camera.to_screen_y(self.player.y),
-            #                       self.player.angle)
-            self.stickman.update(self.player.x, self.player.y, self.player.angle)
-            self.stickman.draw(self.renderer, self.camera)
-            # s.draw(self.renderer)
-
-            # draw the board
-            l = 20
-
-            p1x = self.player.x + cos(self.player.angle) * l
-            p1y = self.player.y + sin(self.player.angle) * l
-
-            p2x = self.player.x - cos(self.player.angle) * l
-            p2y = self.player.y - sin(self.player.angle) * l
-
-            self.renderer.draw_color = (255, 0, 0, 255)
-            self.renderer.draw_line(self.camera.to_screen_x(p1x), self.camera.to_screen_y(p1y), self.camera.to_screen_x(p2x), self.camera.to_screen_y(p2y))
-
-            # draw the kite
-            self.kite.draw(self.renderer, self.camera, self.player.x, self.player.y, self.player.kite_angle)
+            self.player.draw(self.renderer, self.camera)
 
             self.renderer.present()

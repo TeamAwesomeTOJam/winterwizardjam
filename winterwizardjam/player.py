@@ -1,4 +1,5 @@
 from math import sin, cos, sqrt, fabs, pi, atan, atan2
+import stickman, kite
 
 class player(object):
 
@@ -16,7 +17,20 @@ class player(object):
         self.kite_force = 20
         self.drag_coificient = 0.001
 
-    def update(self, dt):
+        self.stickman = stickman.StickMan()
+        self.kite = kite.kite()
+
+        self.board_length = 20
+
+    def update(self, dt, mouse_x, mouse_y):
+
+        shoulder_x, shoulder_y = self.stickman.shoulder_pos
+
+        rise = mouse_y - shoulder_y
+        run = mouse_x - shoulder_x
+
+        self.kite_angle = atan2(rise, run)
+
         slope = self.geometry.slope(self.x)
 
         #kite force
@@ -70,4 +84,23 @@ class player(object):
 
             else:
                 self.grounded = False
+
+        self.stickman.update(self.x, self.y, self.angle, self.kite_angle)
+        kite_x , kite_y = self.stickman.reach_pos
+        self.kite.update(kite_x, kite_y, self.kite_angle)
+
+    def draw(self, renderer, camera):
+        self.stickman.draw(renderer, camera)
+        self.kite.draw(renderer, camera)
+
+        # draw the board
+        p1x = self.x + cos(self.angle) * self.board_length
+        p1y = self.y + sin(self.angle) * self.board_length
+
+        p2x = self.x - cos(self.angle) * self.board_length
+        p2y = self.y - sin(self.angle) * self.board_length
+
+
+        renderer.draw_color = (255, 0, 0, 255)
+        renderer.draw_line(camera.to_screen_x(p1x), camera.to_screen_y(p1y), camera.to_screen_x(p2x), camera.to_screen_y(p2y))
 
