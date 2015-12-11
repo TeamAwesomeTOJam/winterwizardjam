@@ -5,6 +5,7 @@ import pickle
 import sdl2hl
 import sdl2hl.gfx
 
+
 def distance(p1, p2):
     dx = p2[0] - p1[0]
     dy = p2[1] - p1[1]
@@ -90,8 +91,6 @@ class StickMan(object):
         neck_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length)
         head_pos = self._get_endpoint(hip_pos, self.torso_angle, self.torso_length + self.head_radius)
 
-        # TODO arms
-
         reach_pos = self._get_endpoint(shoulder_pos, self.kite_angle, self.reach)
         bar_angle = self.kite_angle - math.pi / 2
 
@@ -110,11 +109,6 @@ class StickMan(object):
         l_elbow_pos = self._get_endpoint(l_hand_pos, (l_hand_shoulder_angle + l_hand_pos_elbow_angle), self.lower_arm_length)
         r_elbow_pos = self._get_endpoint(r_hand_pos, (r_hand_shoulder_angle + r_hand_pos_elbow_angle), self.lower_arm_length)
 
-        # l_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.l_shoulder_angle, self.upper_arm_length)
-        # r_elbow_pos = self._get_endpoint(shoulder_pos, self.torso_angle + self.r_shoulder_angle, self.upper_arm_length)
-        # l_hand_pos = self._get_endpoint(l_elbow_pos, self.torso_angle + self.l_shoulder_angle + self.l_elbow_angle, self.lower_arm_length)
-        # r_hand_pos = self._get_endpoint(r_elbow_pos, self.torso_angle + self.r_shoulder_angle + self.r_elbow_angle, self.lower_arm_length)
-
         l_foot_pos = self._get_endpoint((self.x, self.y), self.angle, -1 * self.foot_offset)
         r_foot_pos = self._get_endpoint((self.x, self.y), self.angle, self.foot_offset)
 
@@ -129,9 +123,6 @@ class StickMan(object):
 
         l_knee_pos = self._get_endpoint(l_foot_pos, l_foot_hip_angle - l_foot_pos_knee_angle, self.lower_leg_length)
         r_knee_pos = self._get_endpoint(r_foot_pos, r_foot_hip_angle - r_foot_pos_knee_angle, self.lower_leg_length)
-
-        # l_foot_pos = self._get_endpoint(l_knee_pos, self.l_hip_angle + self.l_knee_angle, self.lower_leg_length)
-        # r_foot_pos = self._get_endpoint(r_knee_pos, self.r_hip_angle + self.r_knee_angle, self.lower_leg_length)
 
         lines = [(hip_pos, neck_pos),
                  (shoulder_pos, l_elbow_pos),
