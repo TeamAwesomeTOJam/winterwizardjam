@@ -1,4 +1,6 @@
+from pkg_resources import resource_string
 from math import sin, cos, sqrt, fabs, pi, atan, atan2, fabs
+from sdl2hl import mixer
 import stickman, kite
 
 class player(object):
@@ -23,6 +25,9 @@ class player(object):
         self.kite = kite.kite()
 
         self.board_length = 20
+        
+        self.snow_sound = mixer.Chunk(resource_string(__name__, 'res/sound/snow.ogg'))
+        self.channel = self.snow_sound.play(loops=-1)
 
     def update(self, dt, angle):
 
@@ -65,6 +70,7 @@ class player(object):
                 self.y = new_height
                 self.grounded = True
             else:
+                self.channel.pause()
                 self.grounded = False
         else:
             #we started in the air
@@ -84,6 +90,7 @@ class player(object):
                 self.grounded = True
 
                 #we have landed. kill some speed
+                self.channel.resume()
                 new_angle = atan(self.geometry.slope(self.x))
                 landing_angle = fabs(new_angle - self.angle)
                 self.speed *= cos(landing_angle)

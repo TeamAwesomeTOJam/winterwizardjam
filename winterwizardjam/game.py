@@ -1,6 +1,10 @@
+from pkg_resources import resource_string
 import sys
-import sdl2hl
 from math import sin, cos, pi, atan2
+
+import sdl2hl
+import sdl2hl.mixer
+
 import geometry
 import player
 import clock
@@ -12,7 +16,9 @@ import kite
 class game(object):
     def __init__(self):
         sdl2hl.init()
-
+        sdl2hl.mixer.init(sdl2hl.mixer.AudioInitFlag.ogg)
+        sdl2hl.mixer.open_audio()
+        
         self.geometry = geometry.geometry()
 
         self.window_size = (1920, 1080)
