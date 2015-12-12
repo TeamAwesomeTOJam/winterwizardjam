@@ -3,11 +3,11 @@ from math import cos, sin, pi, acos, sqrt
 class geometry(object):
 
     def __init__(self):
-        self.line_slope = 0.5
-        self.amplitude_1 = 50
-        self.period_1 = 500
-        self.amplitude_2 = 75
-        self.period_2 = 600
+        self.line_slope = 0.25
+        self.amplitude_1 = 20
+        self.period_1 = 450
+        self.amplitude_2 = 100
+        self.period_2 = 800
 
         self.lead_up_length = 600
         self.ramp_length = 450

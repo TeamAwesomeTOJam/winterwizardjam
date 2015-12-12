@@ -1,4 +1,4 @@
-from math import sin, cos, sqrt, fabs, pi, atan, atan2
+from math import sin, cos, sqrt, fabs, pi, atan, atan2, fabs
 import stickman, kite
 
 class player(object):
@@ -9,37 +9,41 @@ class player(object):
         self.y = 0
         self.grounded = True
 
-        self.gravity = -20
+        self.gravity = -130
 
         self.speed = 10
         self.angle = 0
         self.kite_angle = 0
-        self.kite_force = 20
-        self.drag_coificient = 0.0001
+        self.forward_kite_force = 75
+        self.top_kite_force = 75
+        self.drag_coefficient = 0.00001
+        self.max_speed = 550
 
         self.stickman = stickman.StickMan()
         self.kite = kite.kite()
 
         self.board_length = 20
 
-    def update(self, dt, mouse_x, mouse_y):
+    def update(self, dt, angle):
 
         shoulder_x, shoulder_y = self.stickman.shoulder_pos
 
-        rise = mouse_y - shoulder_y
-        run = mouse_x - shoulder_x
-
-        self.kite_angle = atan2(rise, run)
+        # rise = mouse_y - shoulder_y
+        # run = mouse_x - shoulder_x
+        #
+        # self.kite_angle = atan2(rise, run)
+        self.kite_angle = angle
 
         slope = self.geometry.slope(self.x)
 
         #kite force
-        f = self.kite_force * cos(self.kite_angle)
+        # f = self.kite_force * cos(self.kite_angle)
+        f = self.forward_kite_force - (self.forward_kite_force - self.top_kite_force) * (fabs(self.kite_angle) / (pi / 2))
         kfx = f * cos(self.kite_angle)
         kfy = f * sin(self.kite_angle)
 
         #drag force
-        d = - 1* self.drag_coificient * self.speed * self.speed
+        d = - 1* self.drag_coefficient * self.speed * self.speed
         dfx = d * cos(self.angle)
         dfy = d * sin(self.angle)
 
@@ -52,6 +56,8 @@ class player(object):
             self.y += vel_y * dt
 
             self.speed = sqrt(vel_x*vel_x + vel_y*vel_y)
+            if self.speed > self.max_speed:
+                self.speed = self.max_speed
             # self.angle = tanh(vel_y/vel_x)
 
             new_height = self.geometry.height(self.x)
@@ -68,6 +74,8 @@ class player(object):
             self.y += vel_y * dt
 
             self.speed = sqrt(vel_x*vel_x + vel_y*vel_y)
+            if self.speed > self.max_speed:
+                self.speed = self.max_speed
             self.angle = atan2(vel_y, vel_x)
 
             new_height = self.geometry.height(self.x)

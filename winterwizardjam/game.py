@@ -36,10 +36,6 @@ class game(object):
         while True:
             dt = self.clock.tick(60)
 
-            # move the camera
-            self.camera.x = self.player.x - 100
-            self.camera.y = self.geometry.line_height(self.camera.x) - 300
-
             for event in sdl2hl.events.poll():
                 if event.type == sdl2hl.QUIT:
                     sdl2hl.quit()
@@ -56,14 +52,23 @@ class game(object):
                     self.camera.zoom *= 1.05
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.kp_plus:
                     self.camera.zoom *= .95
+                elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.r:
+                    self.player = player.player(self.geometry)
                 elif event.type == sdl2hl.MOUSEMOTION:
                     self.mouse_screen_x = event.x
                     self.mouse_screen_y = event.y
 
             self.mouse_x, self.mouse_y = self.camera.to_world(self.mouse_screen_x, self.mouse_screen_y)
 
+            # move the camera
+            self.camera.x = self.player.x - 300
+            self.camera.y = self.geometry.line_height(self.camera.x) - 200
+
+            # get the kite angle
+            angle = (self.camera.height / 2.0 - self.mouse_screen_y) / self.camera.height * pi
+
             # handle the player
-            self.player.update(dt, self.mouse_x, self.mouse_y)
+            self.player.update(dt, angle)
 
             # draw the slope
             self.renderer.draw_color = (0, 0, 0, 255)
