@@ -106,6 +106,7 @@ class game(object):
                 run_time = (run_end_time - run_start_time) / 1000.0
                 print 'run time', run_time
                 run_finished = True
+                self.player.channel.pause()
                 return run_time, self.ghost_data_store
 
             # restore the ghost

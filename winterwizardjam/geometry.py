@@ -11,7 +11,8 @@ class geometry(object):
         # self.period_1 = 750
         # self.amplitude_2 = 100
         # self.period_2 = 1100
-        random.seed(time.strftime("%d/%m/%Y"))
+        seed = time.strftime("%d/%m/%Y")
+        random.seed(seed)
 
         self.line_slope = random.uniform(0.2, 0.35)
         self.amplitude_1 = random.randint(20, 30)
@@ -31,8 +32,8 @@ class geometry(object):
 
         self.total_lead_up = self.lead_up_length + self.ramp_length
 
-        self.course_length = 25000
-        # self.course_length = 2000
+        # self.course_length = 25000
+        self.course_length = 2000
 
     def height(self, x):
         if x <= self.lead_up_length:
