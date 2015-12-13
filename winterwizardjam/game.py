@@ -18,7 +18,7 @@ class game(object):
         sdl2hl.init()
         sdl2hl.mixer.init(sdl2hl.mixer.AudioInitFlag.ogg)
         sdl2hl.mixer.open_audio()
-        
+
         self.geometry = geometry.geometry()
 
         self.window_size = (1920, 1080)
@@ -46,6 +46,7 @@ class game(object):
     def run(self):
 
         run_start_time = sdl2hl.timer.get_ticks()
+        run_finished = False
 
         while True:
             dt = self.clock.tick(60)
@@ -75,6 +76,7 @@ class game(object):
                     self.ghost_data_store = []
                     self.ghost_replay_index = 0
                     run_start_time = sdl2hl.timer.get_ticks()
+                    run_finished = False
                 elif event.type == sdl2hl.MOUSEMOTION:
                     self.mouse_screen_x = event.x
                     self.mouse_screen_y = event.y
@@ -91,33 +93,45 @@ class game(object):
             # handle the player
             self.player.update(dt, angle)
 
-            # store the ghost
+            if not run_finished and self.player.x > self.geometry.course_length:
+                run_end_time = sdl2hl.timer.get_ticks()
+                run_time = (run_end_time - run_start_time) / 1000.0
+                print 'run time', run_time
+                run_finished = True
+
             t = sdl2hl.timer.get_ticks() - run_start_time
             self.ghost_data_store.append((t, self.player.get_state()))
 
             # restore the ghost
+            # store the ghost
             if self.ghost_data_replay:
+
                 while self.ghost_replay_index < len(self.ghost_data_replay) - 1 and self.ghost_data_replay[self.ghost_replay_index][0] < t:
                     self.ghost_replay_index += 1
                 self.ghost.set_state(self.ghost_data_replay[self.ghost_replay_index][1])
-
-            # draw the slope
             self.renderer.draw_color = (0, 0, 0, 255)
             self.renderer.clear()
             self.renderer.draw_color = (255, 255, 255, 255)
 
             points = []
+            # draw the slope
             for x in range(0, self.camera.width):
+
                 y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
                 points.append(sdl2hl.Point(x,y))
                 points.append(sdl2hl.Point(x,self.window_size[1]))
             self.renderer.draw_lines(*points)
+            finish = self.camera.to_screen_x(self.geometry.course_length)
+            self.renderer.draw_color = (0, 255, 0, 255)
+            self.renderer.draw_line(finish, 0, finish, self.camera.height)
 
             # draw the player
             self.player.draw(self.renderer, self.camera)
 
             # draw the ghost
+            # draw the finish line
             if self.ghost_data_replay:
+
                 self.ghost.draw(self.renderer, self.camera)
 
             self.renderer.present()

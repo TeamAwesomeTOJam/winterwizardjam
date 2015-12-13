@@ -14,7 +14,7 @@ class geometry(object):
         self.amplitude_1 = random.randint(20, 30)
         self.period_1 = random.randint(650, 800)
         self.amplitude_2 = random.randint(80, 120)
-        self.period_2 = random.randint(850, 1150)
+        self.period_2 = random.randint(900, 1150)
 
         print 'line_slope', self.line_slope
         print 'amplitude_1', self.amplitude_1
