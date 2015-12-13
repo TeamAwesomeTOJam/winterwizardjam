@@ -1,6 +1,7 @@
 import sys, os
-import game
+import program
+
 
 def main():
-    g = game.game()
-    g.run()
+    p = program.Program()
+    p.run()

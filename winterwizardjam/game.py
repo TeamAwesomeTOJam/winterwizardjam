@@ -15,24 +15,15 @@ import kite
 
 
 class game(object):
-    def __init__(self):
-        sdl2hl.init()
-        sdl2hl.mixer.init(sdl2hl.mixer.AudioInitFlag.ogg)
-        sdl2hl.mixer.open_audio()
-        sdl2hl.ttf.init()
-
+    def __init__(self, renderer, size):
         self.geometry = geometry.geometry()
 
-        self.window_size = (1920, 1080)
+        self.renderer = renderer
 
-        self.window = sdl2hl.Window(title="Winter Wizard Jam", w=self.window_size[0], h=self.window_size[1])
-        # self.renderer = sdl2hl.Renderer(self.window,-1, sdl2hl.RendererFlags.presentvsync)
-        self.renderer = sdl2hl.Renderer(self.window)
-
-        self.camera = camera.camera(self.window_size[0], self.window_size[1])
+        self.camera = camera.camera(size[0], size[1])
 
         self.player = player.player(self.geometry)
-        self.clock = clock.clock()
+
 
         self.mouse_screen_x = 0
         self.mouse_screen_y = 0
@@ -47,13 +38,20 @@ class game(object):
         
         self.font = sdl2hl.ttf.Font(resource_string(__name__, 'res/font/LiberationSans-Regular.ttf'), 24)
 
-    def run(self):
+    def run(self, ghost_data):
+        self.ghost_data_replay = ghost_data
+        self.ghost_replay_index = 0
+        self.ghost_data_store = []
 
         run_start_time = sdl2hl.timer.get_ticks()
         run_finished = False
 
+        my_clock = clock.clock()
+
+        self.player = player.player(self.geometry)
+
         while True:
-            dt = self.clock.tick(60)
+            dt = my_clock.tick(60)
 
             for event in sdl2hl.events.poll():
                 if event.type == sdl2hl.QUIT:
@@ -76,7 +74,8 @@ class game(object):
                     self.camera.zoom *= .95
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.r:
                     self.player = player.player(self.geometry)
-                    self.ghost_data_replay = self.ghost_data_store
+                    if not ghost_data:
+                        self.ghost_data_replay = self.ghost_data_store
                     self.ghost_data_store = []
                     self.ghost_replay_index = 0
                     run_start_time = sdl2hl.timer.get_ticks()
@@ -97,34 +96,38 @@ class game(object):
             # handle the player
             self.player.update(dt, angle)
 
+            # store the ghost
+            t = sdl2hl.timer.get_ticks() - run_start_time
+            self.ghost_data_store.append((t, self.player.get_state()))
+
+            #check race end
             if not run_finished and self.player.x > self.geometry.course_length:
                 run_end_time = sdl2hl.timer.get_ticks()
                 run_time = (run_end_time - run_start_time) / 1000.0
                 print 'run time', run_time
                 run_finished = True
-
-            t = sdl2hl.timer.get_ticks() - run_start_time
-            self.ghost_data_store.append((t, self.player.get_state()))
+                return run_time, self.ghost_data_store
 
             # restore the ghost
-            # store the ghost
             if self.ghost_data_replay:
-
                 while self.ghost_replay_index < len(self.ghost_data_replay) - 1 and self.ghost_data_replay[self.ghost_replay_index][0] < t:
                     self.ghost_replay_index += 1
                 self.ghost.set_state(self.ghost_data_replay[self.ghost_replay_index][1])
+
             self.renderer.draw_color = (0, 0, 0, 255)
             self.renderer.clear()
-            self.renderer.draw_color = (255, 255, 255, 255)
 
-            points = []
             # draw the slope
+            self.renderer.draw_color = (255, 255, 255, 255)
+            points = []
             for x in range(0, self.camera.width):
-
                 y = self.camera.to_screen_y(self.geometry.height(self.camera.to_world_x(x)))
                 points.append(sdl2hl.Point(x,y))
-                points.append(sdl2hl.Point(x,self.window_size[1]))
+                points.append(sdl2hl.Point(x,self.camera.height))
+
             self.renderer.draw_lines(*points)
+
+            # draw the finish line
             finish = self.camera.to_screen_x(self.geometry.course_length)
             self.renderer.draw_color = (0, 255, 0, 255)
             self.renderer.draw_line(finish, 0, finish, self.camera.height)
@@ -133,15 +136,11 @@ class game(object):
             self.player.draw(self.renderer, self.camera)
 
             # draw the ghost
-            # draw the finish line
             if self.ghost_data_replay:
-
                 self.ghost.draw(self.renderer, self.camera)
 
-            self.renderer.present()
-            
-            text_texture = sdl2hl.Texture.from_surface(self.renderer, self.font.render_solid('Example!', (255,255,255,255)))
-            self.renderer.copy(text_texture, dest_rect=sdl2hl.Rect(x=100, y=100, w=text_texture.w, h=text_texture.h))
-            
+            # text_texture = sdl2hl.Texture.from_surface(self.renderer, self.font.render_solid('Example!', (255,255,255,255)))
+            # self.renderer.copy(text_texture, dest_rect=sdl2hl.Rect(x=100, y=100, w=text_texture.w, h=text_texture.h))
+
             self.renderer.present()
 

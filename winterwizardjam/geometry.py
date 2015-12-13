@@ -28,7 +28,8 @@ class geometry(object):
 
         self.total_lead_up = self.lead_up_length + self.ramp_length
 
-        self.course_length = 25000
+        # self.course_length = 25000
+        self.course_length = 2000
 
     def height(self, x):
         if x <= self.lead_up_length:

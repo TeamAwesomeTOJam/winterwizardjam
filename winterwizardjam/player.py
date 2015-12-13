@@ -39,6 +39,7 @@ class player(object):
         if not self.ghost:
             self.snow_sound = mixer.Chunk(resource_string(__name__, 'res/sound/snow.ogg'))
             self.channel = self.snow_sound.play(loops=-1)
+            self.channel.pause()
 
     def update(self, dt, angle):
 
@@ -81,6 +82,8 @@ class player(object):
                 self.y = new_height
                 self.grounded = True
                 self.flight_time = 0
+                if not self.ghost:
+                    self.channel.resume()
             else:
                 self.grounded = False
                 self.flight_time += dt
