@@ -38,7 +38,15 @@ class game(object):
         self.mouse_x = 0
         self.mouse_y = 0
 
+        self.ghost = player.player(self.geometry, True)
+        self.ghost_data_store = []
+        self.ghost_data_replay = []
+        self.ghost_replay_index = 0
+
     def run(self):
+
+        run_start_time = sdl2hl.timer.get_ticks()
+
         while True:
             dt = self.clock.tick(60)
 
@@ -63,6 +71,10 @@ class game(object):
                     self.camera.zoom *= .95
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.r:
                     self.player = player.player(self.geometry)
+                    self.ghost_data_replay = self.ghost_data_store
+                    self.ghost_data_store = []
+                    self.ghost_replay_index = 0
+                    run_start_time = sdl2hl.timer.get_ticks()
                 elif event.type == sdl2hl.MOUSEMOTION:
                     self.mouse_screen_x = event.x
                     self.mouse_screen_y = event.y
@@ -79,6 +91,16 @@ class game(object):
             # handle the player
             self.player.update(dt, angle)
 
+            # store the ghost
+            t = sdl2hl.timer.get_ticks() - run_start_time
+            self.ghost_data_store.append((t, self.player.get_state()))
+
+            # restore the ghost
+            if self.ghost_data_replay:
+                while self.ghost_replay_index < len(self.ghost_data_replay) - 1 and self.ghost_data_replay[self.ghost_replay_index][0] < t:
+                    self.ghost_replay_index += 1
+                self.ghost.set_state(self.ghost_data_replay[self.ghost_replay_index][1])
+
             # draw the slope
             self.renderer.draw_color = (0, 0, 0, 255)
             self.renderer.clear()
@@ -93,5 +115,9 @@ class game(object):
 
             # draw the player
             self.player.draw(self.renderer, self.camera)
+
+            # draw the ghost
+            if self.ghost_data_replay:
+                self.ghost.draw(self.renderer, self.camera)
 
             self.renderer.present()

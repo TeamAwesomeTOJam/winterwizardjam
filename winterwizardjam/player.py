@@ -5,8 +5,15 @@ import stickman, kite
 
 class player(object):
 
-    def __init__(self, geometry):
+    def __init__(self, geometry, ghost = False):
         self.geometry = geometry
+        self.ghost = ghost
+
+        if ghost:
+            self.color = (0, 255, 255, 255)
+        else:
+            self.color = (255, 0, 0, 255)
+
         self.x = 0
         self.y = 0
         self.grounded = True
@@ -21,13 +28,14 @@ class player(object):
         self.drag_coefficient = 0.00001
         self.max_speed = 550
 
-        self.stickman = stickman.StickMan()
-        self.kite = kite.kite()
+        self.stickman = stickman.StickMan(ghost)
+        self.kite = kite.kite(ghost)
 
         self.board_length = 20
-        
-        self.snow_sound = mixer.Chunk(resource_string(__name__, 'res/sound/snow.ogg'))
-        self.channel = self.snow_sound.play(loops=-1)
+
+        if not self.ghost:
+            self.snow_sound = mixer.Chunk(resource_string(__name__, 'res/sound/snow.ogg'))
+            self.channel = self.snow_sound.play(loops=-1)
 
     def update(self, dt, angle):
 
@@ -70,7 +78,8 @@ class player(object):
                 self.y = new_height
                 self.grounded = True
             else:
-                self.channel.pause()
+                if not self.ghost:
+                    self.channel.pause()
                 self.grounded = False
         else:
             #we started in the air
@@ -90,7 +99,8 @@ class player(object):
                 self.grounded = True
 
                 #we have landed. kill some speed
-                self.channel.resume()
+                if not self.ghost:
+                    self.channel.resume()
                 new_angle = atan(self.geometry.slope(self.x))
                 landing_angle = fabs(new_angle - self.angle)
                 self.speed *= cos(landing_angle)
@@ -100,6 +110,18 @@ class player(object):
             else:
                 self.grounded = False
 
+        self.stickman.update(self.x, self.y, self.angle, self.kite_angle)
+        kite_x , kite_y = self.stickman.reach_pos
+        self.kite.update(kite_x, kite_y, self.kite_angle)
+
+    def get_state(self):
+        return (self.angle, self.kite_angle, self.x, self.y)
+
+    def set_state(self, state):
+        self.angle = state[0]
+        self.kite_angle = state[1]
+        self.x = state[2]
+        self.y = state[3]
         self.stickman.update(self.x, self.y, self.angle, self.kite_angle)
         kite_x , kite_y = self.stickman.reach_pos
         self.kite.update(kite_x, kite_y, self.kite_angle)
@@ -116,6 +138,6 @@ class player(object):
         p2y = self.y - sin(self.angle) * self.board_length
 
 
-        renderer.draw_color = (255, 0, 0, 255)
+        renderer.draw_color = self.color
         renderer.draw_line(camera.to_screen_x(p1x), camera.to_screen_y(p1y), camera.to_screen_x(p2x), camera.to_screen_y(p2y))
 

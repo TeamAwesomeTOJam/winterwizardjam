@@ -6,10 +6,13 @@ import sdl2hl.gfx
 
 class kite(object):
 
-    def __init__(self):
+    def __init__(self, ghost = False):
         self.length = 400
         self.spread = 200
-        self.color = (255, 0, 0, 255)
+        if ghost:
+            self.color = (0, 255, 255, 255)
+        else:
+            self.color = (255, 0, 0, 255)
         self.center_to_string_end_angle = atan2(self.spread, (2 * self.length))
         self.center_to_string_end = sqrt(self.length * self.length + self.spread * self.spread / 4)
 

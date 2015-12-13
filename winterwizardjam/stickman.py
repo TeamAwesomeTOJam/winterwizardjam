@@ -13,13 +13,16 @@ def distance(p1, p2):
 
 class StickMan(object):
 
-    def __init__(self):
+    def __init__(self, ghost = False):
         self.x = 0
         self.y = 0
         self.angle = 0
         self.kite_angle = 0
 
-        self.color = (255, 255, 255, 255)
+        if ghost:
+            self.color = (0, 255, 255, 255)
+        else:
+            self.color = (255, 255, 255, 255)
         self.width = 2
         
         self.upper_arm_length = 9
