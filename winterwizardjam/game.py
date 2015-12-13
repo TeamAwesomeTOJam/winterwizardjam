@@ -4,6 +4,7 @@ from math import sin, cos, pi, atan2
 
 import sdl2hl
 import sdl2hl.mixer
+import sdl2hl.ttf
 
 import geometry
 import player
@@ -18,6 +19,7 @@ class game(object):
         sdl2hl.init()
         sdl2hl.mixer.init(sdl2hl.mixer.AudioInitFlag.ogg)
         sdl2hl.mixer.open_audio()
+        sdl2hl.ttf.init()
 
         self.geometry = geometry.geometry()
 
@@ -42,6 +44,8 @@ class game(object):
         self.ghost_data_store = []
         self.ghost_data_replay = []
         self.ghost_replay_index = 0
+        
+        self.font = sdl2hl.ttf.Font(resource_string(__name__, 'res/font/LiberationSans-Regular.ttf'), 24)
 
     def run(self):
 
@@ -135,3 +139,9 @@ class game(object):
                 self.ghost.draw(self.renderer, self.camera)
 
             self.renderer.present()
+            
+            text_texture = sdl2hl.Texture.from_surface(self.renderer, self.font.render_solid('Example!', (255,255,255,255)))
+            self.renderer.copy(text_texture, dest_rect=sdl2hl.Rect(x=100, y=100, w=text_texture.w, h=text_texture.h))
+            
+            self.renderer.present()
+
