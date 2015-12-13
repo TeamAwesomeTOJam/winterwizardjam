@@ -1,5 +1,7 @@
 from math import cos, sin, pi, acos, sqrt
 import random
+import time
+
 
 class geometry(object):
 
@@ -9,6 +11,7 @@ class geometry(object):
         # self.period_1 = 750
         # self.amplitude_2 = 100
         # self.period_2 = 1100
+        random.seed(time.strftime("%d/%m/%Y"))
 
         self.line_slope = random.uniform(0.2, 0.35)
         self.amplitude_1 = random.randint(20, 30)
