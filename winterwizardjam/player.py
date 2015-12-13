@@ -33,6 +33,9 @@ class player(object):
 
         self.board_length = 20
 
+        self.flight_time = 0
+        self.flight_lag_time = 0.1
+
         if not self.ghost:
             self.snow_sound = mixer.Chunk(resource_string(__name__, 'res/sound/snow.ogg'))
             self.channel = self.snow_sound.play(loops=-1)
@@ -77,10 +80,12 @@ class player(object):
             if self.y <= new_height:
                 self.y = new_height
                 self.grounded = True
+                self.flight_time = 0
             else:
-                if not self.ghost:
-                    self.channel.pause()
                 self.grounded = False
+                self.flight_time += dt
+                if not self.ghost and self.flight_time >= self.flight_lag_time:
+                    self.channel.pause()
         else:
             #we started in the air
             vel_x = self.speed * cos(self.angle) + (kfx + dfx) * dt
@@ -97,6 +102,7 @@ class player(object):
             if self.y <= new_height:
                 self.y = new_height
                 self.grounded = True
+                self.flight_time = 0
 
                 #we have landed. kill some speed
                 if not self.ghost:
@@ -109,6 +115,9 @@ class player(object):
 
             else:
                 self.grounded = False
+                self.flight_time += dt
+                if not self.ghost and self.flight_time >= self.flight_lag_time:
+                    self.channel.pause()
 
         self.stickman.update(self.x, self.y, self.angle, self.kite_angle)
         kite_x , kite_y = self.stickman.reach_pos

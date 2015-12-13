@@ -12,9 +12,9 @@ class geometry(object):
 
         self.line_slope = random.uniform(0.2, 0.35)
         self.amplitude_1 = random.randint(20, 30)
-        self.period_1 = random.randint(600, 800)
+        self.period_1 = random.randint(650, 800)
         self.amplitude_2 = random.randint(80, 120)
-        self.period_2 = random.randint(1000, 1300)
+        self.period_2 = random.randint(850, 1150)
 
         print 'line_slope', self.line_slope
         print 'amplitude_1', self.amplitude_1
@@ -28,25 +28,33 @@ class geometry(object):
 
         self.total_lead_up = self.lead_up_length + self.ramp_length
 
+        self.course_length = 25000
+
     def height(self, x):
         if x <= self.lead_up_length:
             return 0
         elif x <= self.total_lead_up:
             return self.ramp_rad - sqrt((self.ramp_rad + self.lead_up_length - x) * (self.ramp_rad - self.lead_up_length + x))
             # return -1 * self.ramp_rad * sin(acos((1.0 / self.ramp_rad) * (x - self.lead_up_length))) + self.ramp_rad
-        else:
+        elif x <= self.course_length:
             return self.line_slope * x - self.line_slope * self.total_lead_up + self.amplitude_1 * cos ((2 * pi / self.period_1) * x) + self.amplitude_2 * cos ((2 * pi / self.period_2) * x)
+        else:
+            return self.line_slope * self.course_length - self.line_slope * self.total_lead_up + self.amplitude_1 * cos ((2 * pi / self.period_1) * self.course_length) + self.amplitude_2 * cos ((2 * pi / self.period_2) * self.course_length)
 
     def slope(self, x):
         if x <= self.lead_up_length:
             return 0
         elif x <= self.total_lead_up:
             return (x - self.lead_up_length)/(self.ramp_rad * sqrt(1 - (self.lead_up_length - x)**2 / self.ramp_rad**2))
-        else:
+        elif x <= self.course_length:
             return self.line_slope - self.amplitude_1 * (2 * pi / self.period_1) * sin ((2 * pi / self.period_1) * x) - self.amplitude_2 * (2 * pi / self.period_2) * sin ((2 * pi / self.period_2) * x)
+        else:
+            return 0
 
     def line_height(self, x):
         if x <= self.total_lead_up:
             return 0
-        else:
+        elif x < self.course_length:
             return self.line_slope * x - self.line_slope * self.total_lead_up
+        else:
+            return self.line_slope * self.course_length - self.line_slope * self.total_lead_up
