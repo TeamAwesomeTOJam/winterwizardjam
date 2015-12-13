@@ -1,13 +1,26 @@
 from math import cos, sin, pi, acos, sqrt
+import random
 
 class geometry(object):
 
     def __init__(self):
-        self.line_slope = 0.25
-        self.amplitude_1 = 20
-        self.period_1 = 450
-        self.amplitude_2 = 100
-        self.period_2 = 800
+        # self.line_slope = 0.3
+        # self.amplitude_1 = 20
+        # self.period_1 = 750
+        # self.amplitude_2 = 100
+        # self.period_2 = 1100
+
+        self.line_slope = random.uniform(0.2, 0.35)
+        self.amplitude_1 = random.randint(20, 30)
+        self.period_1 = random.randint(600, 800)
+        self.amplitude_2 = random.randint(80, 120)
+        self.period_2 = random.randint(1000, 1300)
+
+        print 'line_slope', self.line_slope
+        print 'amplitude_1', self.amplitude_1
+        print 'period_1', self.period_1
+        print 'amplitude_2', self.amplitude_2
+        print 'period_2', self.period_2
 
         self.lead_up_length = 600
         self.ramp_length = 450

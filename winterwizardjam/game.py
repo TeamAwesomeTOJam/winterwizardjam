@@ -46,6 +46,9 @@ class game(object):
                 if event.type == sdl2hl.QUIT:
                     sdl2hl.quit()
                     sys.exit()
+                elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.escape:
+                    sdl2hl.quit()
+                    sys.exit()
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.up:
                     self.camera.y += 5
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.down:

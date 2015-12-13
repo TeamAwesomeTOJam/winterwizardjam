@@ -94,7 +94,7 @@ class player(object):
                 new_angle = atan(self.geometry.slope(self.x))
                 landing_angle = fabs(new_angle - self.angle)
                 self.speed *= cos(landing_angle)
-                print landing_angle * 180 / pi
+                # print landing_angle * 180 / pi
 
 
             else:
