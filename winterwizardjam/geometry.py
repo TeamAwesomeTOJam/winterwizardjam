@@ -20,11 +20,11 @@ class geometry(object):
         self.amplitude_2 = random.randint(80, 120)
         self.period_2 = random.randint(900, 1150)
 
-        print 'line_slope', self.line_slope
-        print 'amplitude_1', self.amplitude_1
-        print 'period_1', self.period_1
-        print 'amplitude_2', self.amplitude_2
-        print 'period_2', self.period_2
+        # print 'line_slope', self.line_slope
+        # print 'amplitude_1', self.amplitude_1
+        # print 'period_1', self.period_1
+        # print 'amplitude_2', self.amplitude_2
+        # print 'period_2', self.period_2
 
         self.lead_up_length = 600
         self.ramp_length = 450
@@ -32,8 +32,8 @@ class geometry(object):
 
         self.total_lead_up = self.lead_up_length + self.ramp_length
 
-        # self.course_length = 25000
-        self.course_length = 2000
+        self.course_length = 25000
+        # self.course_length = 2000
 
     def height(self, x):
         if x <= self.lead_up_length:

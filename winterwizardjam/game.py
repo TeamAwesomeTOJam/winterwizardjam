@@ -24,7 +24,6 @@ class game(object):
 
         self.player = player.player(self.geometry)
 
-
         self.mouse_screen_x = 0
         self.mouse_screen_y = 0
 
@@ -38,7 +37,7 @@ class game(object):
         
         self.font = sdl2hl.ttf.Font(resource_string(__name__, 'res/font/LiberationSans-Regular.ttf'), 24)
 
-    def run(self, ghost_data):
+    def run(self, ghost_data, use_mouse):
         self.ghost_data_replay = ghost_data
         self.ghost_replay_index = 0
         self.ghost_data_store = []
@@ -91,6 +90,7 @@ class game(object):
             self.camera.y = self.geometry.line_height(self.camera.x) - 200
 
             # get the kite angle
+            # TODO poll the mouse for this so it always accurate even if the mouse never moved
             angle = (self.camera.height / 2.0 - self.mouse_screen_y) / self.camera.height * pi
 
             # handle the player
@@ -104,7 +104,7 @@ class game(object):
             if not run_finished and self.player.x > self.geometry.course_length:
                 run_end_time = sdl2hl.timer.get_ticks()
                 run_time = (run_end_time - run_start_time) / 1000.0
-                print 'run time', run_time
+                # print 'run time', run_time
                 run_finished = True
                 self.player.channel.pause()
                 return run_time, self.ghost_data_store

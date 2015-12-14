@@ -20,32 +20,27 @@ class Program(object):
         self.renderer = sdl2hl.Renderer(self.window)
 
         self.game = game.game(self.renderer, self.window_size)
-        self.title = title.Title(self.renderer)
-        self.end = end.End(self.renderer)
+        self.title = title.Title(self.renderer, self.window_size)
+        self.end = end.End(self.renderer, self.window_size)
 
         self.best_run_time = 0
         self.best_run_ghost_data = []
         self.best_run_set = False
 
     def run(self):
-        self.title.run()
+        use_mouse, ghost = self.title.run()
         while True:
-            for score in leaderboard.get_hi_scores(5):
-                print score.name, score.time
-            
-            run_time, ghost_data = self.game.run(self.best_run_ghost_data)
 
-            self.end.run(run_time, self.best_run_time, self.best_run_set)
+            run_time, ghost_data = self.game.run(ghost, use_mouse)
+
+            ghost = self.end.run(run_time, self.best_run_time, self.best_run_set, ghost_data, self.best_run_ghost_data)
 
             if self.best_run_set:
                 if run_time < self.best_run_time:
                     self.best_run_time = run_time
                     self.best_run_ghost_data = ghost_data
-                    leaderboard.post_score(leaderboard.Score(self.end.name, run_time, ghost_data))
+
             else:
                 self.best_run_time = run_time
                 self.best_run_ghost_data = ghost_data
                 self.best_run_set = True
-                leaderboard.post_score(leaderboard.Score(self.end.name, run_time, ghost_data))
-
-
