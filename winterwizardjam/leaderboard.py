@@ -12,19 +12,41 @@ REGION = 'us-east-1'
 boto3.setup_default_session(aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, region_name=REGION)
 
 
-def post_time(name, time, ghost):
+class Score(object):
+    
+    def __init__(self, name, time, ghost):
+        self.name = name
+        self.time = time
+        self.ghost = ghost
+
+
+def post_score(score):
     now = datetime.utcnow().strftime('%Y-%m-%d')
 
     dynamodb = boto3.resource('dynamodb')
     hi_score_table = dynamodb.Table('winterwizardjam_hiscore')
-    hi_score_table.put_item(Item={'date' : now, 'time' : Decimal(str(time)), 'name' : name if name != '' else ' '})
+    hi_score_table.put_item(Item={
+        'date' : now, 
+        'time' : Decimal(str(score.time)), 
+        'name' : score.name if score.name != '' else '*nobody*',
+        'ghost' : json.dumps(score.ghost)
+    })
     
 
-def get_best_times(count):
+def get_hi_scores(count):
     now = datetime.utcnow().strftime('%Y-%m-%d')
 
     dynamodb = boto3.resource('dynamodb')
     hi_score_table = dynamodb.Table('winterwizardjam_hiscore')
     
     response = hi_score_table.query(Limit=count, KeyConditionExpression=Key('date').eq(now))
-    return response['Items']
+    scores = []
+    for item in response['Items']:
+        scores.append(Score(
+            item['name'],
+            float(item['time']),
+            json.loads(item['ghost'])
+        ))
+        
+    return scores
+
