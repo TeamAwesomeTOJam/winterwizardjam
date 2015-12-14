@@ -2,6 +2,7 @@ import sdl2hl
 import game
 import title
 import end
+import leaderboard
 
 
 class Program(object):
@@ -27,6 +28,7 @@ class Program(object):
         self.best_run_set = False
 
     def run(self):
+        print leaderboard.get_best_times(5)
         self.title.run()
         while True:
             run_time, ghost_data = self.game.run(self.best_run_ghost_data)
@@ -37,8 +39,11 @@ class Program(object):
                 if run_time < self.best_run_time:
                     self.best_run_time = run_time
                     self.best_run_ghost_data = ghost_data
+                    print self.end.name
+                    leaderboard.post_time(self.end.name, run_time, ghost_data)
             else:
                 self.best_run_time = run_time
                 self.best_run_ghost_data = ghost_data
                 self.best_run_set = True
+
 

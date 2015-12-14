@@ -20,7 +20,7 @@ setup(
     keywords='game wizardjam kitesurfing',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['sdl2hl'],
+    install_requires=['sdl2hl', 'boto3'],
     package_data = {
         'winterwizardjam': ['res/*/*'],
     },
