@@ -73,8 +73,6 @@ class game(object):
                     self.camera.zoom *= .95
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.r:
                     self.player = player.player(self.geometry)
-                    if not ghost_data:
-                        self.ghost_data_replay = self.ghost_data_store
                     self.ghost_data_store = []
                     self.ghost_replay_index = 0
                     run_start_time = sdl2hl.timer.get_ticks()

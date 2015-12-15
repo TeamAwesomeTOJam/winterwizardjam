@@ -15,6 +15,15 @@ class Title(object):
         self.window_size = window_size
 
     def run(self):
+        # draw a blank frame whiel we load scores
+        self.renderer.draw_color = (0, 0, 0, 255)
+        self.renderer.clear()
+
+        title = ui.Text(0, 100, 'Loading...', 40)
+        title.x = self.window_size[0]/2 - title.width/2
+        title.draw(self.renderer)
+
+        self.renderer.present()
 
         scores = leaderboard.get_hi_scores(5)
 
