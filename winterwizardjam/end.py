@@ -35,6 +35,8 @@ class End(object):
                 s = 'Your time was ' + str(last_time) + ' seconds. Your personal best is ' + str(best_time) + ' seconds.'
         else:
             s = 'Your time was ' + str(last_time) + ' seconds.'
+            best_time = last_time
+            best_ghost = last_ghost
 
         title = ui.Text(0, 100, s, 40)
         title.x = self.window_size[0]/2 - title.width/2
@@ -134,9 +136,9 @@ class End(object):
                     if self.button_selected == len(buttons) - 1:
                         return []
                     elif self.button_selected == len(buttons) - 2:
-                        return best_ghost
-                    elif self.button_selected == len(buttons) - 3:
                         return last_ghost
+                    elif self.button_selected == len(buttons) - 3:
+                        return best_ghost
                     else:
                         return scores[self.button_selected].ghost
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.backspace:

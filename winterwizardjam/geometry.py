@@ -1,6 +1,6 @@
 from math import cos, sin, pi, acos, sqrt
 import random
-import time
+from datetime import datetime
 
 
 class geometry(object):
@@ -11,7 +11,7 @@ class geometry(object):
         # self.period_1 = 750
         # self.amplitude_2 = 100
         # self.period_2 = 1100
-        seed = time.strftime("%d/%m/%Y")
+        seed = now = datetime.utcnow().strftime('%Y-%m-%d')
         random.seed(seed)
 
         self.line_slope = random.uniform(0.2, 0.35)

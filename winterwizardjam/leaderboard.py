@@ -29,6 +29,7 @@ def get_hi_scores(count):
     now = datetime.utcnow().strftime('%Y-%m-%d')
 
     response = requests.get(SCORE_URL)
+    # print response.json()
     scores = []
     for score in response.json():
         scores.append(Score(

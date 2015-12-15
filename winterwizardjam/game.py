@@ -131,12 +131,12 @@ class game(object):
             self.renderer.draw_color = (0, 255, 0, 255)
             self.renderer.draw_line(finish, 0, finish, self.camera.height)
 
-            # draw the player
-            self.player.draw(self.renderer, self.camera)
-
             # draw the ghost
             if self.ghost_data_replay:
                 self.ghost.draw(self.renderer, self.camera)
+
+            # draw the player
+            self.player.draw(self.renderer, self.camera)
 
             # text_texture = sdl2hl.Texture.from_surface(self.renderer, self.font.render_solid('Example!', (255,255,255,255)))
             # self.renderer.copy(text_texture, dest_rect=sdl2hl.Rect(x=100, y=100, w=text_texture.w, h=text_texture.h))
