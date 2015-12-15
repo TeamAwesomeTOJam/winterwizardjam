@@ -29,6 +29,8 @@ class End(object):
         if best_time_set:
             if last_time <= best_time:
                 s = 'New personal best! Your time was ' + str(last_time) + ' seconds.'
+                best_time = last_time
+                best_ghost = last_ghost
             else:
                 s = 'Your time was ' + str(last_time) + ' seconds. Your personal best is ' + str(best_time) + ' seconds.'
         else:
@@ -140,6 +142,7 @@ class End(object):
                 elif event.type == sdl2hl.KEYDOWN and event.keycode == sdl2hl.KeyCode.backspace:
                     if self.name:
                         self.name = self.name[:-1]
+                        name_text.set_text(self.name)
                 elif event.type == sdl2hl.TEXTINPUT:
                     if len(self.name) <= self.max_name_length:
                         self.name += event.text
